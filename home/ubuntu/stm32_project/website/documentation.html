@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - STM32F407 HID to Serial/CAN Project</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">STM32F407 HID-CAN</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="documentation.html">Documentation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="downloads.html">Downloads</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link flash-btn" href="web-flasher.html">Web Flasher</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="configuration.html">Configuration</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="sticky-top pt-4">
+                    <div class="list-group mb-4">
+                        <a href="#overview" class="list-group-item list-group-item-action">Overview</a>
+                        <a href="#hardware" class="list-group-item list-group-item-action">Hardware Requirements</a>
+                        <a href="#installation" class="list-group-item list-group-item-action">Installation & Setup</a>
+                        <a href="#input-handling" class="list-group-item list-group-item-action">Input Device Handling</a>
+                        <a href="#mapping" class="list-group-item list-group-item-action">Mapping System</a>
+                        <a href="#output" class="list-group-item list-group-item-action">Output System</a>
+                        <a href="#display" class="list-group-item list-group-item-action">Display System</a>
+                        <a href="#web-interface" class="list-group-item list-group-item-action">Web Interface</a>
+                        <a href="#tunerstudio" class="list-group-item list-group-item-action">TunerStudio Integration</a>
+                        <a href="#troubleshooting" class="list-group-item list-group-item-action">Troubleshooting</a>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            Quick Links
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><a href="web-flasher.html" class="text-decoration-none">Web Flasher</a></li>
+                            <li class="list-group-item"><a href="configuration.html" class="text-decoration-none">Configuration Tool</a></li>
+                            <li class="list-group-item"><a href="downloads.html" class="text-decoration-none">Download Files</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-9">
+                <h1 class="mb-4">STM32F407 HID to Serial/CAN Project Documentation</h1>
+                
+                <section id="overview" class="mb-5">
+                    <h2>Project Overview</h2>
+                    <p>
+                        This project implements a versatile input-to-output mapping system for the STM32F407 microcontroller, 
+                        specifically designed for the STM32mega development board. The system allows multiple HID input devices 
+                        (keyboards, mice, gamepads, etc.) to be connected to the STM32F407, with their inputs mapped to either 
+                        serial or CAN bus outputs.
+                    </p>
+                    
+                    <h3>Key Features</h3>
+                    <ul>
+                        <li><strong>Multiple HID Device Support:</strong> Connect and use various USB HID devices simultaneously</li>
+                        <li><strong>Flexible Mapping System:</strong> Map any input to any output with configurable parameters</li>
+                        <li><strong>Dual Output Options:</strong> Send mapped inputs to Serial UART or CAN bus</li>
+                        <li><strong>1.28" Round TFT Display:</strong> Visual feedback and status information via GC9A01 controller</li>
+                        <li><strong>Web Interface:</strong> Configure mappings and update firmware through a browser</li>
+                        <li><strong>TunerStudio Integration:</strong> Alternative configuration through TunerStudio software</li>
+                        <li><strong>Firmware Updates:</strong> Easy firmware updates through the web interface</li>
+                    </ul>
+                </section>
+                
+                <section id="hardware" class="mb-5">
+                    <h2>Hardware Requirements</h2>
+                    
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Required Components</h5>
+                            <ul class="mb-0">
+                                <li>STM32F407 microcontroller (STM32mega development board)</li>
+                                <li>1.28" Round TFT display with GC9A01 controller</li>
+                                <li>USB Host capability (for HID device connection)</li>
+                                <li>CAN transceiver (for CAN bus communication)</li>
+                                <li>Ethernet connection (for web interface access)</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <h3>Pin Connections</h3>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>Component</th>
+                                    <th>Pin</th>
+                                    <th>STM32F407 Connection</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td rowspan="7">Display (GC9A01)</td>
+                                    <td>CS</td>
+                                    <td>PA4</td>
+                                </tr>
+                                <tr>
+                                    <td>DC</td>
+                                    <td>PA3</td>
+                                </tr>
+                                <tr>
+                                    <td>RST</td>
+                                    <td>PA2</td>
+                                </tr>
+                                <tr>
+                                    <td>BL</td>
+                                    <td>PA1</td>
+                                </tr>
+                                <tr>
+                                    <td>SCK</td>
+                                    <td>PA5</td>
+                                </tr>
+                                <tr>
+                                    <td>MISO</td>
+                                    <td>PA6</td>
+                                </tr>
+                                <tr>
+                                    <td>MOSI</td>
+                                    <td>PA7</td>
+                                </tr>
+                                <tr>
+                                    <td rowspan="4">USB Host</td>
+                                    <td>USB_DM</td>
+                                    <td>PA11</td>
+                                </tr>
+                                <tr>
+                                    <td>USB_DP</td>
+                                    <td>PA12</td>
+                                </tr>
+                                <tr>
+                                    <td>USB_ID</td>
+                                    <td>PA10</td>
+                                </tr>
+                                <tr>
+                                    <td>USB_VBUS</td>
+                                    <td>PA9</td>
+                                </tr>
+                                <tr>
+                                    <td rowspan="2">CAN Bus</td>
+                                    <td>CAN_TX</td>
+                                    <td>PB9</td>
+                                </tr>
+                                <tr>
+                                    <td>CAN_RX</td>
+                                    <td>PB8</td>
+                                </tr>
+                                <tr>
+                                    <td rowspan="2">Serial UART</td>
+                                    <td>UART_TX</td>
+                                    <td>PA2</td>
+                                </tr>
+                                <tr>
+                                    <td>UART_RX</td>
+                                    <td>PA3</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <section id="installation" class="mb-5">
+                    <h2>Installation & Setup</h2>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            Step 1: Flash the Firmware
+                        </div>
+                        <div class="card-body">
+                            <p>Use our <a href="web-flasher.html">Web Flasher</a> to flash the firmware to your STM32F407 device:</p>
+                            <ol class="mb-0">
+                                <li>Connect your STM32F407 to your computer via USB</li>
+                                <li>Navigate to the <a href="web-flasher.html">Web Flasher</a> page</li>
+                                <li>Click "Connect Device" and select your device</li>
+                                <li>Choose the latest firmware version or upload your own</li>
+                                <li>Click "Flash Firmware" and wait for the process to complete</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            Step 2: Hardware Connections
+                        </div>
+                        <div class="card-body">
+                            <p>Connect the hardware components according to the pin connections table above:</p>
+                            <ol class="mb-0">
+                                <li>Connect the 1.28" GC9A01 display</li>
+                                <li>Connect the CAN transceiver (if using CAN output)</li>
+                                <li>Connect power to the STM32F407</li>
+                                <li>Connect Ethernet for web interface access</li>
+                            </ol>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            Step 3: Initial Configuration
+                        </div>
+                        <div class="card-body">
+                            <p>Configure your device using the <a href="configuration.html">Configuration Tool</a>:</p>
+                            <ol class="mb-0">
+                                <li>Connect to your device via the Configuration Tool</li>
+                                <li>Configure input mappings based on your HID devices</li>
+                                <li>Set up display settings for the 1.28" TFT</li>
+                                <li>Configure output settings for serial or CAN bus</li>
+                                <li>Save your configuration</li>
+                            </ol>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="input-handling" class="mb-5">
+                    <h2>Input Device Handling</h2>
+                    
+                    <p>
+                        The system supports various HID devices including keyboards, mice, gamepads, and custom HID devices.
+                        Devices are automatically detected and enumerated when connected, with each device assigned a unique
+                        identifier for mapping purposes.
+                    </p>
+                    
+                    <h3>Supported HID Devices</h3>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-primary text-white">
+                                    Keyboards
+                                </div>
+                                <div class="card-body">
+                                    <ul class="mb-0">
+                                        <li>All standard keys</li>
+                                        <li>Modifier keys (Shift, Ctrl, Alt, etc.)</li>
+                                        <li>Media keys</li>
+                                        <li>Function keys</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-primary text-white">
+                                    Mice
+                                </div>
+                                <div class="card-body">
+                                    <ul class="mb-0">
+                                        <li>X/Y movement</li>
+                                        <li>Buttons (left, right, middle)</li>
+                                        <li>Scroll wheel</li>
+                                        <li>Additional buttons</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-header bg-primary text-white">
+                                    Gamepads
+                                </div>
+                                <div class="card-body">
+                                    <ul class="mb-0">
+                                        <li>Buttons</li>
+                                        <li>Analog sticks</li>
+                                        <li>Triggers</li>
+                                        <li>D-pad</li>
+                                    </ul>
+                               <response clipped><NOTE>To save on context only part of this file has been shown to you. You should retry this tool after you have searched inside the file with `grep -n` in order to find the line numbers of what you are looking for.</NOTE>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration Tool - STM32F407 HID to Serial/CAN Project</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">STM32F407 HID-CAN</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="documentation.html">Documentation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="downloads.html">Downloads</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link flash-btn" href="web-flasher.html">Web Flasher</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="configuration.html">Configuration</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <h1 class="text-center mb-4">STM32F407 Configuration Tool</h1>
+                
+                <ul class="nav nav-tabs" id="configTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="device-tab" data-bs-toggle="tab" data-bs-target="#device" type="button" role="tab" aria-controls="device" aria-selected="true">Device Connection</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="mapping-tab" data-bs-toggle="tab" data-bs-target="#mapping" type="button" role="tab" aria-controls="mapping" aria-selected="false">Input Mapping</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="display-tab" data-bs-toggle="tab" data-bs-target="#display" type="button" role="tab" aria-controls="display" aria-selected="false">Display Settings</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="output-tab" data-bs-toggle="tab" data-bs-target="#output" type="button" role="tab" aria-controls="output" aria-selected="false">Output Settings</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="advanced-tab" data-bs-toggle="tab" data-bs-target="#advanced" type="button" role="tab" aria-controls="advanced" aria-selected="false">Advanced</button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content p-4 border border-top-0 rounded-bottom" id="configTabContent">
+                    <!-- Device Connection Tab -->
+                    <div class="tab-pane fade show active" id="device" role="tabpanel" aria-labelledby="device-tab">
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                Connection Status
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span id="device-status">Not connected</span>
+                                    <button id="connect-device-button" class="btn btn-primary">Connect Device</button>
+                                </div>
+                                <div class="progress" style="height: 25px;">
+                                    <div id="device-progress" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                Device Information
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <strong>Firmware Version:</strong>
+                                    </div>
+                                    <div class="col-md-8" id="firmware-version">
+                                        Unknown
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <strong>Connected HID Devices:</strong>
+                                    </div>
+                                    <div class="col-md-8" id="connected-devices">
+                                        None
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <strong>Active Mappings:</strong>
+                                    </div>
+                                    <div class="col-md-8" id="active-mappings">
+                                        0
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <strong>Device Status:</strong>
+                                    </div>
+                                    <div class="col-md-8" id="device-health">
+                                        Unknown
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Input Mapping Tab -->
+                    <div class="tab-pane fade" id="mapping" role="tabpanel" aria-labelledby="mapping-tab">
+                        <div class="alert alert-info mb-4">
+                            Connect your device first to configure input mappings.
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                <span>Input Mappings</span>
+                                <button id="add-mapping-button" class="btn btn-sm btn-light">Add Mapping</button>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped" id="mappings-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Source Device</th>
+                                                <th>Input</th>
+                                                <th>Output Type</th>
+                                                <th>Output Target</th>
+                                                <th>Transformation</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="6" class="text-center">No mappings configured</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Mapping Editor Modal -->
+                        <div class="modal fade" id="mappingModal" tabindex="-1" aria-labelledby="mappingModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-primary text-white">
+                                        <h5 class="modal-title" id="mappingModalLabel">Edit Mapping</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="mapping-form">
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="source-device" class="form-label">Source Device</label>
+                                                    <select class="form-select" id="source-device" required>
+                                                        <option value="" selected disabled>Select device</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="input-type" class="form-label">Input Type</label>
+                                                    <select class="form-select" id="input-type" required>
+                                                        <option value="" selected disabled>Select input type</option>
+                                                        <option value="button">Button</option>
+                                                        <option value="axis">Axis</option>
+                                                        <option value="key">Keyboard Key</option>
+                                                        <option value="mouse">Mouse Movement</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="input-code" class="form-label">Input Code</label>
+                                                    <select class="form-select" id="input-code" required>
+                                                        <option value="" selected disabled>Select input first</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="output-type" class="form-label">Output Type</label>
+                                                    <select class="form-select" id="output-type" required>
+                                                        <option value="" selected disabled>Select output type</option>
+                                                        <option value="serial">Serial</option>
+                                                        <option value="can">CAN Bus</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="output-id" class="form-label">Output ID</label>
+                                                    <input type="text" class="form-control" id="output-id" required>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="output-code" class="form-label">Output Code</label>
+                                                    <input type="text" class="form-control" id="output-code" required>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="min-input" class="form-label">Min Input Value</label>
+                                                    <input type="number" class="form-control" id="min-input" value="0">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="max-input" class="form-label">Max Input Value</label>
+                                                    <input type="number" class="form-control" id="max-input" value="1023">
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label for="min-output" class="form-label">Min Output Value</label>
+                                                    <input type="number" class="form-control" id="min-output" value="0">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label for="max-output" class="form-label">Max Output Value</label>
+                                                    <input type="number" class="form-control" id="max-output" value="1023">
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input" type="checkbox" id="invert-mapping">
+                                                <label class="form-check-label" for="invert-mapping">
+                                                    Invert mapping
+                                                </label>
+                                            </div>
+                                        </form>
+     <response clipped><NOTE>To save on context only part of this file has been shown to you. You should retry this tool after you have searched inside the file with `grep -n` in order to find the line numbers of what you are looking for.</NOTE>

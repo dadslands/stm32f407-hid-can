@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STM32F407 HID to Serial/CAN Configuration</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --background-color: #ecf0f1;
+            --text-color: #333;
+            --border-color: #bdc3c7;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --error-color: #e74c3c;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            margin-bottom: 10px;
+        }
+        
+        .status-bar {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--success-color);
+            margin-right: 8px;
+        }
+        
+        .status-dot.disconnected {
+            background-color: var(--error-color);
+        }
+        
+        .tabs {
+            display: flex;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .tab:hover {
+            background-color: #e9ecef;
+        }
+        
+        .tab.active {
+            background-color: white;
+            border-bottom: 3px solid var(--secondary-color);
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            font-weight: bold;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="password"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-danger {
+            background-color: var(--error-color);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+        }
+        
+        .btn-warning:hover {
+            background-color: #d35400;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .device-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            background-color: white;
+        }
+        
+        .device-card h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .device-info {
+            margin-bottom: 10px;
+        }
+        
+        .device-info span {
+            font-weight: bold;
+        }
+        
+        .mapping-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .mapping-table th,
+        .mapping-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .mapping-table th {
+            background-color: #f8f9fa;
+        }
+        
+        .mapping-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .mapping-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--secondary-color);
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+        
+        .progress {
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--secondary-color);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .mapping-controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>STM32F407 HID to Serial/CAN</h1>
+            <p>Configuration Interface</p>
+        </header>
+        
+        <div class="status-bar">
+            <div class="status-indicator">
+                <div class="status-dot" id="connection-status"></div>
+                <span id="status-text">Connected</span>
+            </div>
+            <div class="firmware-version">
+                Firmware: <span id="firmware-version">v1.0.0</span>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="dashboard">Dashboard</div>
+            <div class="tab" data-tab="mapping">Input Mapping</div>
+            <div class="tab" data-tab="display">Display Config</div>
+            <div class="tab" data-tab="tunerstudio">TunerStudio</div>
+            <div class="tab" data-tab="firmware">Firmware Update</div>
+            <div class="tab" data-tab="settings">Settings</div>
+        </div>
+        
+        <div class="tab-content active" id="dashboard">
+            <h2>System Dashboard</h2>
+            
+            <div class="card">
+                <div class="card-header">Connected Devices</div>
+                <div class="card-body">
+                    <div class="grid" id="devices-container">
+                        <!-- Devices will be populated here -->
+                        <div class="device-card">
+                            <h3>Keyboard</h3>
+                            <div class="device-info">
+                                <span>Vendor ID:</span> 0x046D
+                            </div>
+                            <div class="device-info">
+                                <span>Product ID:</span> 0xC31C
+                            </div>
+                            <div class="device-info">
+                                <span>Status:</span> Connected
+                            </div>
+                        </div>
+                        
+                        <div class="device-card">
+                            <h3>Mouse</h3>
+                            <div class="device-info">
+                                <span>Vendor ID:</span> 0x046D
+                            </div>
+                            <div class="device-info">
+                                <span>Product ID:</span> 0xC52B
+                            </div>
+                            <div class="device-info">
+                                <span>Status:</span> Connected
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">System Status</div>
+                <div class="card-body">
+                    <div class="grid">
+                        <div class="device-card">
+                            <h3>Input Manager</h3>
+                            <div class="device-info">
+                                <span>Connected Devices:</span> 2
+                            </div>
+                            <div class="device-info">
+                                <span>Active Mappings:</span> 5
+                            </div>
+                        </div>
+                        
+                        <div class="device-card">
+                            <h3>Output Manager</h3>
+                            <div class="device-info">
+                                <span>Serial Status:</span> Active
+                            </div>
+                            <div class="device-info">
+                                <span>CAN Status:</span> Active
+                            </div>
+                        </div>
+                        
+                        <div class="device-card">
+                            <h3>Display</h3>
+                            <div class="device-info">
+                                <span>Status:</span> Active
+                            </div>
+                            <div class="device-info">
+                                <span>Items:</span> 4
+                            </div>
+                        </div>
+                        
+                        <div class="device-card">
+                            <h3>System</h3>
+                            <div class="device-info">
+                                <span>Uptime:</span> <span id="uptime">0d 0h 0m 0s</span>
+                            </div>
+                            <div class="device-info">
+                                <span>Memory Usage:</span> 45%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="mapping">
+            <h2>Input-to-Output Mapping</h2>
+            
+            <div class="card">
+                <div class="card-header">Add New Mapping</div>
+                <div class="card-body">
+                    <form id="mapping-form">
+                        <div class="form-group">
+                            <label for="input-device">Input Device</label>
+                            <select id="input-device" required>
+                                <option value="">Select Device</option>
+                                <option value="1">Keyboard</option>
+                                <option value="2">Mouse</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="input-type">Input Type</label>
+                            <select id="input-type" required>
+                                <option value="">Select Type</option>
+                                <option value="button">Button</option>
+                                <option value="key">Key</option>
+                                <option value="axis">Axis</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="input-id">Input ID</label>
+                            <input type="text" id="input-id" placeholder="Input ID or Key Code" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="output-type">Output Type</label>
+                            <select id="output-type" required>
+                                <option value="">Select Type</option>
+                                <option value="serial">Serial</option>
+                                <option value="can">CAN</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group output-serial">
+                            <label for="serial-format">Serial Format</label>
+                            <select id="serial-format">
+                                <option value="raw">Raw</option>
+                                <option value="ascii">ASCII</option>
+                                <option value="hex">Hex</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group output-can">
+                            <label for="can-id">CAN ID</label>
+                            <input type="text" id="can-id" placeholder="CAN ID (hex)">
+                        </div>
+                        
+                        <div class="form-group output-can">
+                            <label for="can-data-index">Data Index</label>
+                            <input type="number" id="can-data-index" min="0" max="7" value="0">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">Add Mapping</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">Current Mappings</div>
+                <div class="card-body">
+                    <table class="mapping-table">
+                        <thead>
+                            <tr>
+                                <th>Device</th>
+                                <th>Input Type</th>
+                                <th>Input ID</th>
+                                <th>Output Type</th>
+                                <th>Output Details</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mappings-container">
+                            <!-- Mappings will be populated here -->
+                            <tr>
+                                <td>Keyboard</td>
+                                <td>Key</td>
+                                <td>A (0x04)</td>
+                                <td>Serial</td>
+                                <td>Raw format</td>
+                                <td>
+                                    <div class="mapping-controls">
+                                        <button class="btn btn-warning">Edit</button>
+                                        <button class="btn btn-danger">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Mouse</td>
+                                <td>Axis</td>
+                                <td>X Axis</td>
+                                <td>CAN</td>
+                                <td>ID: 0x100, Index: 0</td>
+                                <td>
+                                    <div class="mapping-controls">
+                                        <button class="btn btn-warning">Edit</button>
+                                        <button class="btn btn-danger">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="display">
+            <h2>Display Configuration</h2>
+            
+            <div class="card">
+                <div class="card-header">Add Display Item</div>
+                <div class="card-body">
+                    <form id="display-form">
+                        <div class="form-group">
+                            <label for="item-type">Item Type</label>
+                            <select id="item-type" required>
+                                <option value="">Select Type</option>
+                                <option value="text">Text</option>
+                                <option value="value">Value</option>
+                                <option value="bar">Bar</option>
+                                <option value="icon">Icon</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="item-label">Label</label>
+                            <input type="text" id="item-label" placeholder="Item Label">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="item-position">Position</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="number" id="item-x" placeholder="X" min="0" max="240" style="width: 80px;">
+                                <input type="number" id="item-y" placeholder="Y" min="0" max="240" style="width: 80px;">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="data-source">Data Source</label>
+                            <select id="data-source" required>
+                                <option value="">Select Source</option>
+                                <option value="serial">Serial</option>
+                                <option value="can">CAN</option>
+                                <option value="system">System</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group data-can">
+                            <label for="data-can-id">CAN ID</label>
+                            <input type="text" id="data-can-id" placeholder="CAN ID (hex)">
+                        </div>
+                        
+                        <div class="form-group data-can">
+                            <label for="data-can-index">Data Index</label>
+                            <input type="number" id="data-can-index" min="0" max="7" value="0">
+                        </div>
+                        
+                        <div class="form-group data-system">
+                            <label for="data-system-param">System Parameter</label>
+                            <select id="data-system-param">
+                                <option value="status">System Status</option>
+                                <option value="devices">Connected Devices</option>
+                                <option value="mappings">Active Mappings</option>
+                                <option value="uptime">System Uptime</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="item-color">Color</label>
+                            <input type="color" id="item-color" value="#3498db">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">Add Item</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">Display Preview</div>
+                <div class="card-body">
+                    <div style="width: 240px; height: 240px; border-radius: 50%; background-color: black; margin: 0 auto; position: relative; overflow: hidden;">
+                        <!-- Display items will be shown here -->
+                        <div style="position: absolute; top: 100px; left: 80px; color: white;">Status: OK</div>
+                        <div style="position: absolute; top: 140px; left: 80px; color: #2ecc71;">RPM: 3500</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">Current Display Items</div>
+                <div class="card-body">
+                    <table class="mapping-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Label</th>
+                                <th>Position</th>
+                                <th>Data Source</th>
+                                <th>Color</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="display-items-container">
+                            <!-- Display items will be populated here -->
+                            <tr>
+                                <td>Text</td>
+                                <td>Status</td>
+                                <td>X: 80, Y: 100</td>
+                                <td>System: Status</td>
+                                <td><div style="width: 20px; height: 20px; background-color: white; border: 1px solid #ccc;"></div></td>
+                                <td>
+                                    <div class="mapping-controls">
+                                        <button class="btn btn-warning">Edit</button>
+                                        <button class="btn btn-danger">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Value</td>
+                                <td>RPM</td>
+                                <td>X: 80, Y: 140</td>
+                                <td>CAN: 0x100, Index: 0</td>
+                                <td><div style="width: 20px; height: 20px; background-color: #2ecc71; border: 1px solid #ccc;"></div></td>
+                                <td>
+                                    <div class="mapping-controls">
+                                        <button class="btn btn-warning">Edit</button>
+                                        <button class="btn btn-danger">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="tunerstudio">
+            <h2>TunerStudio Integration</h2>
+            
+            <div class="card">
+                <div class="card-header">TunerStudio Configuration</div>
+                <div class="card-body">
+                    <form id="tunerstudio-form">
+                        <div class="form-group">
+                            <label for="ts-protocol">Protocol</label>
+                            <select id="ts-protocol" required>
+                                <option value="ms">MegaSquirt</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ts-baud">Baud Rate</label>
+                            <select id="ts-baud" required>
+                                <option value="9600">9600</option>
+                                <option value="19200">19200</option>
+                                <option value="38400">38400</option>
+                                <option value="57600">57600</option>
+                                <option value="115200" selected>115200</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ts-signature">Signature</label>
+                            <input type="text" id="ts-signature" value="STM32HID" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">Save Configuration</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">TunerStudio INI File</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="ts-ini">INI File Content</label>
+                        <textarea id="ts-ini" rows="10" readonly style="font-family: monospace;">
+; TunerStudio INI File for STM32F407 HID to Serial/CAN
+; Generated on 2025-03-28
+
+[MegaTune]
+signature = "STM32HID"
+version = "1.0.0"
+
+[Constants]
+pageSize = 128
+pageCount = 1
+
+[OutputChannels]
+; Define output channels here
+                        </textarea>
+                    </div>
+                    
+                    <button class="btn">Download INI File</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">Connection Instructions</div>
+                <div class="card-body">
+                    <ol>
+                        <li>Connect your STM32F407 device to your computer via USB or serial adapter.</li>
+                        <li>Open TunerStudio and create a new project.</li>
+                        <li>Select "Other" as the firmware type.</li>
+                        <li>Load the INI file downloaded from this page.</li>
+                        <li>Configure the serial port settings to match the device.</li>
+                        <li>Click "Connect" in TunerStudio to establish communication.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="firmware">
+            <h2>Firmware Update</h2>
+            
+            <div class="alert alert-info">
+                Current Firmware Version: <span id="current-firmware-version">v1.0.0</span>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">Upload Firmware</div>
+                <div class="card-body">
+                    <div class="upload-area" id="upload-area">
+                        <div class="upload-icon">📤</div>
+                        <h3>Drag & Drop Firmware File</h3>
+                        <p>or click to select file</p>
+                        <input type="file" id="firmware-file" style="display: none;">
+                    </div>
+                    
+                    <div class="progress" style="display: none;" id="upload-progress-container">
+                        <div class="progress-bar" id="upload-progress"></div>
+                    </div>
+                    
+                    <button class="btn btn-success" id="upload-button" disabled>Upload & Install</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">Firmware History</div>
+                <div class="card-body">
+                    <table class="mapping-table">
+                        <thead>
+                            <tr>
+                                <th>Version</th>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>v1.0.0</td>
+                                <td>2025-03-28</td>
+                                <td>Initial release</td>
+                                <td>
+                                    <button class="btn" disabled>Current</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>v0.9.0</td>
+                                <td>2025-03-15</td>
+                                <td>Beta version</td>
+                                <td>
+                                    <button class="btn btn-warning">Rollback</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="settings">
+            <h2>System Settings</h2>
+            
+            <div class="card">
+                <div class="card-header">Network Settings</div>
+                <div class="card-body">
+                    <form id="network-form">
+                        <div class="form-group">
+                            <label for="dhcp-enabled">
+                                <input type="checkbox" id="dhcp-enabled" checked>
+                                Enable DHCP
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ip-address">IP Address</label>
+                            <input type="text" id="ip-address" value="192.168.1.100" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subnet-mask">Subnet Mask</label>
+                            <input type="text" id="subnet-mask" value="255.255.255.0" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="gateway">Gateway</label>
+                            <input type="text" id="gateway" value="192.168.1.1" disabled>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">Save Network Settings</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">Security Settings</div>
+                <div class="card-body">
+                    <form id="security-form">
+                        <div class="form-group">
+                            <label for="auth-enabled">
+                                <input type="checkbox" id="auth-enabled">
+                                Enable Authentication
+                            </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" value="admin">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" value="admin">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">Save Security Settings</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">System Maintenance</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <button class="btn btn-warning" id="reset-config">Reset Configuration</button>
+                        <p>Reset all configuration to default values.</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button class="btn" id="backup-config">Backup Configuration</button>
+                        <p>Download a backup of the current configuration.</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button class="btn" id="restore-config">Restore Configuration</button>
+                        <p>Restore configuration from a backup file.</p>
+                        <input type="file" id="config-file" style="display: none;">
+                    </div>
+                    
+                    <div class="form-group">
+                        <button class="btn btn-danger" id="factory-reset">Factory Reset</button>
+                        <p>Reset the device to factory settings. All configuration will be lost.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>STM32F407 HID to Serial/CAN Configuration Interface</p>
+            <p>Firmware Version: <span id="footer-firmware-version">v1.0.0</span></p>
+        </footer>
+    </div>
+    
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and content
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+        
+        // DHCP toggle
+        document.getElementById('dhcp-enabled').addEventListener('change', function() {
+            const ipFields = document.querySelectorAll('#ip-address, #subnet-mask, #gateway');
+            ipFields.forEach(field => {
+                field.disabled = this.checked;
+            });
+        });
+        
+        // Firmware upload
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('firmware-file');
+        const uploadButton = document.getElementById('upload-button');
+        const progressContainer = document.getElementById('upload-progress-container');
+        const progressBar = document.getElementById('upload-progress');
+        
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#3498db';
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = '#bdc3c7';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#bdc3c7';
+            
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                handleFileSelect();
+            }
+        });
+        
+        fileInput.addEventListener('change', handleFileSelect);
+        
+        function handleFileSelect() {
+            if (fileInput.files.length) {
+                const file = fileInput.files[0];
+                uploadArea.querySelector('h3').textContent = file.name;
+                uploadArea.querySelector('p').textContent = `${(file.size / 1024).toFixed(2)} KB`;
+                uploadButton.disabled = false;
+            }
+        }
+        
+        uploadButton.addEventListener('click', () => {
+            if (fileInput.files.length) {
+                // Simulate upload
+                progressContainer.style.display = 'block';
+                uploadButton.disabled = true;
+                
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 5;
+                    progressBar.style.width = `${progress}%`;
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            alert('Firmware uploaded successfully! Device will reboot.');
+                            progressContainer.style.display = 'none';
+                            uploadButton.disabled = false;
+                            document.getElementById('current-firmware-version').textContent = 'v1.1.0';
+                            document.getElementById('firmware-version').textContent = 'v1.1.0';
+                            document.getElementById('footer-firmware-version').textContent = 'v1.1.0';
+                        }, 500);
+                    }
+                }, 100);
+            }
+        });
+        
+        // System maintenance buttons
+        document.getElementById('reset-config').addEventListener('click', () => {
+            if (confirm('Are you sure you want to reset all configuration to default values?')) {
+                alert('Configuration reset to defaults.');
+            }
+        });
+        
+        document.getElementById('backup-config').addEventListener('click', () => {
+            alert('Configuration backup downloaded.');
+        });
+        
+        document.getElementById('restore-config').addEventListener('click', () => {
+            document.getElementById('config-file').click();
+        });
+        
+        document.getElementById('config-file').addEventListener('change', () => {
+            if (document.getElementById('config-file').files.length) {
+                alert('Configuration restored successfully!');
+            }
+        });
+        
+        document.getElementById('factory-reset').addEventListener('click', () => {
+            if (confirm('WARNING: This will reset the device to factory settings. All configuration will be lost. Are you sure?')) {
+                alert('Device reset to factory settings. The device will reboot.');
+            }
+        });
+        
+        // Update uptime
+        let seconds = 0;
+        setInterval(() => {
+            seconds++;
+            const days = Math.floor(seconds / 86400);
+            const hours = Math.floor((seconds % 86400) / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            document.getElementById('uptime').textContent = `${days}d ${hours}h ${minutes}m ${secs}s`;
+        }, 1000);
+    </script>
+</body>
+</html>

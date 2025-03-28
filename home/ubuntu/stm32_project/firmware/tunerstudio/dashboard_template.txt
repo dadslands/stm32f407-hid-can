@@ -1,0 +1,39 @@
+# TunerStudio Dashboard Template for STM32F407 HID-CAN Project
+
+[DashboardTemplate]
+  title = "STM32F407 HID-CAN Main Dashboard"
+  
+[Gauges]
+  # Input Values Section
+  gauge = inputValue1Gauge, 20, 20, 200, 200
+  gauge = inputValue2Gauge, 240, 20, 200, 200
+  gauge = inputValue3Gauge, 460, 20, 200, 200
+  gauge = inputValue4Gauge, 680, 20, 200, 200
+  
+  # Output Values Section
+  gauge = outputValue1Gauge, 20, 240, 200, 200
+  gauge = outputValue2Gauge, 240, 240, 200, 200
+  gauge = outputValue3Gauge, 460, 240, 200, 200
+  gauge = outputValue4Gauge, 680, 240, 200, 200
+  
+  # System Metrics Section
+  gauge = cpuLoadGauge, 20, 460, 200, 200
+  gauge = memoryUsageGauge, 240, 460, 200, 200
+  gauge = usbBandwidthGauge, 460, 460, 200, 200
+  gauge = canBusLoadGauge, 680, 460, 200, 200
+
+[Labels]
+  label = "STM32F407 HID-CAN Controller", 450, 10, center, 18, bold
+  label = "Input Values", 230, 230, center, 14, bold
+  label = "Output Values", 230, 450, center, 14, bold
+  label = "System Metrics", 230, 670, center, 14, bold
+  
+[Indicators]
+  indicator = deviceStatus, 900, 20, 20, 20, circle, {0: red, 1: green, 2: yellow}
+  indicator = connectedDevices, 900, 50, 100, 20, text, "Devices: %d"
+  indicator = activeMappings, 900, 80, 100, 20, text, "Mappings: %d"
+  
+[Buttons]
+  button = "Reset Device", resetDevice, 900, 120, 100, 30
+  button = "Factory Reset", factoryReset, 900, 160, 100, 30
+  button = "Update Firmware", updateFirmware, 900, 200, 100, 30

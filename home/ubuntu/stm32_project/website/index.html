@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STM32F407 HID to Serial/CAN Project</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">STM32F407 HID-CAN</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="documentation.html">Documentation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="downloads.html">Downloads</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link flash-btn" href="web-flasher.html">Web Flasher</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="configuration.html">Configuration</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8">
+                <h1>STM32F407 HID to Serial/CAN Project</h1>
+                <p class="lead">A versatile input-to-output mapping system for the STM32F407 microcontroller</p>
+                
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Project Overview</h5>
+                        <p class="card-text">
+                            This project implements a versatile input-to-output mapping system for the STM32F407 microcontroller, 
+                            specifically designed for the STM32mega development board. The system allows multiple HID input devices 
+                            (keyboards, mice, gamepads, etc.) to be connected to the STM32F407, with their inputs mapped to either 
+                            serial or CAN bus outputs.
+                        </p>
+                    </div>
+                </div>
+
+                <h2>Key Features</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Multiple HID Device Support</h5>
+                                <p class="card-text">Connect and use various USB HID devices simultaneously</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Flexible Mapping System</h5>
+                                <p class="card-text">Map any input to any output with configurable parameters</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Dual Output Options</h5>
+                                <p class="card-text">Send mapped inputs to Serial UART or CAN bus</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">1.28" Round TFT Display</h5>
+                                <p class="card-text">Visual feedback and status information via GC9A01 controller</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4 mb-5">
+                    <a href="web-flasher.html" class="btn btn-primary btn-lg px-4 me-md-2">Web Flasher</a>
+                    <a href="configuration.html" class="btn btn-outline-primary btn-lg px-4">Configuration Tool</a>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        Quick Links
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a href="web-flasher.html" class="text-decoration-none">Flash Firmware</a></li>
+                        <li class="list-group-item"><a href="configuration.html" class="text-decoration-none">Configure Display</a></li>
+                        <li class="list-group-item"><a href="mapping.html" class="text-decoration-none">Input/Output Mapping</a></li>
+                        <li class="list-group-item"><a href="docs/user_manual.html" class="text-decoration-none">User Manual</a></li>
+                        <li class="list-group-item"><a href="docs/technical_documentation.html" class="text-decoration-none">Technical Documentation</a></li>
+                    </ul>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header bg-primary text-white">
+                        Downloads
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><a href="firmware/stm32f407_hid_to_can_latest.bin" class="text-decoration-none">Latest Firmware</a></li>
+                        <li class="list-group-item"><a href="firmware/stm32f407_hid_to_can_source.zip" class="text-decoration-none">Source Code</a></li>
+                        <li class="list-group-item"><a href="firmware/tunerstudio_ini.zip" class="text-decoration-none">TunerStudio Files</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2025 STM32F407 HID-CAN Project</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="https://github.com/dadslands/stm32f407-hid-can" class="text-decoration-none me-3">GitHub</a>
+                    <a href="contact.html" class="text-decoration-none">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
